@@ -38,6 +38,7 @@ describe Oystercard do
 
   context 'there is money on the card' do
     before { subject.top_up(described_class::BALANCE_LIMIT) }
+
     describe '#touch_in' do
       it 'starts a journey' do
         subject.touch_in
@@ -53,6 +54,14 @@ describe Oystercard do
       end
     end
   end
+  context 'there is not enough money on the card' do
+    describe '#touch_in' do
+      it 'raises an error if insufficient funds to travel' do
+        expect { subject.touch_in }.to raise_error("Insufficient funds")
+      end
+    end
 
+
+  end
 
 end
