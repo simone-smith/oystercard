@@ -20,12 +20,6 @@ describe Oystercard do
 
   end
 
-  describe '#deduct' do
-    it 'reduces the balance by a specified amount' do
-      expect { subject.deduct 1 }.to change { subject.balance }.by -1
-    end
-  end
-
   it 'is initially not in a journey' do
     expect(subject).not_to be_in_journey
   end
@@ -52,8 +46,15 @@ describe Oystercard do
         subject.touch_out
         expect(subject).not_to be_in_journey
       end
+
+      it 'charges card on touchout' do
+        subject.touch_in
+        expect { subject.touch_out }.to change { subject.balance }.by -described_class::MINIMUM_CHARGE
+      end
     end
   end
+
+
   context 'there is not enough money on the card' do
     describe '#touch_in' do
       it 'raises an error if insufficient funds to travel' do
