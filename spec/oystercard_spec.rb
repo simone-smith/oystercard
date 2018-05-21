@@ -3,10 +3,15 @@ require 'oystercard'
 describe Oystercard do
 
   let(:entry_station) { double :entry_station }
+  let(:exit_station) { double :exit_station }
 
   describe '#initialize' do
     it 'initializes with a balance of 0' do
       expect(subject.balance).to eq 0
+    end
+
+    it 'has an empty list of journeys by default' do
+      expect(subject.journey_history).to be_empty
     end
   end
 
@@ -47,20 +52,35 @@ describe Oystercard do
       end
     end
 
+    let(:journey){ {entry_station: entry_station, exit_station: exit_station} }
+
+    it 'makes a new journey when you touch in and out' do
+      subject.touch_in(entry_station)
+      subject.touch_out(exit_station)
+      expect(subject.journey_history).to eq ({entry_station => exit_station})
+    end
+  end
+
+  context 'oystercard is already in a journey' do
+    before { subject.top_up(described_class::BALANCE_LIMIT) }
+    before { subject.touch_in(entry_station) }
+
     describe '#touch_out' do
       it 'ends a journey' do
-        subject.touch_in
         subject.touch_out
         expect(subject).not_to be_in_journey
       end
 
       it 'charges card on touchout' do
-        subject.touch_in
         expect { subject.touch_out }.to change { subject.balance }.by -described_class::MINIMUM_CHARGE
+      end
+
+      it 'stores exit station' do
+        subject.touch_out(exit_station)
+        expect(subject.exit_station).to eq exit_station
       end
     end
   end
-
 
   context 'there is not enough money on the card' do
     describe '#touch_in' do
@@ -68,8 +88,6 @@ describe Oystercard do
         expect { subject.touch_in }.to raise_error("Insufficient funds")
       end
     end
-
-
   end
 
 end
