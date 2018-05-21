@@ -26,4 +26,33 @@ describe Oystercard do
     end
   end
 
+  it 'is initially not in a journey' do
+    expect(subject).not_to be_in_journey
+  end
+
+  describe '#in_journey?' do
+    it 'returns true or false' do
+      expect(subject.in_journey?).to be(true).or be(false)
+    end
+  end
+
+  context 'there is money on the card' do
+    before { subject.top_up(described_class::BALANCE_LIMIT) }
+    describe '#touch_in' do
+      it 'starts a journey' do
+        subject.touch_in
+        expect(subject).to be_in_journey
+      end
+    end
+
+    describe '#touch_out' do
+      it 'ends a journey' do
+        subject.touch_in
+        subject.touch_out
+        expect(subject).not_to be_in_journey
+      end
+    end
+  end
+
+
 end
