@@ -1,6 +1,9 @@
 require 'oystercard'
 
 describe Oystercard do
+
+  let(:entry_station) { double :entry_station }
+
   describe '#initialize' do
     it 'initializes with a balance of 0' do
       expect(subject.balance).to eq 0
@@ -17,7 +20,6 @@ describe Oystercard do
       subject.top_up(maximum_balance)
       expect { subject.top_up 1 }.to raise_error("Maximum balance of #{described_class::MAX_BALANCE} exceeded")
     end
-
   end
 
   it 'is initially not in a journey' do
@@ -35,8 +37,13 @@ describe Oystercard do
 
     describe '#touch_in' do
       it 'starts a journey' do
-        subject.touch_in
+        subject.touch_in(entry_station)
         expect(subject).to be_in_journey
+      end
+
+      it 'remembers the entry station after touch_in' do
+        subject.touch_in(entry_station)
+        expect(subject.entry_station).to eq entry_station
       end
     end
 
