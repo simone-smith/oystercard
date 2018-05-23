@@ -1,3 +1,6 @@
+require_relative 'station'
+require_relative 'journey'
+
 class Oystercard
   attr_reader :balance, :entry_station, :exit_station, :journeys
   MAX_BALANCE = 90
@@ -21,7 +24,7 @@ class Oystercard
   def touch_in(entry_station)
     fail "Insufficient funds" if @balance < BALANCE_LIMIT
     @entry_station = entry_station
-    journeys << {entry_station: entry_station, exit_station: nil}
+    journeys << { entry_station: entry_station, exit_station: nil }
   end
 
   def touch_out(exit_station)
@@ -37,5 +40,4 @@ class Oystercard
   def deduct(amount)
     @balance -= amount
   end
-
 end
