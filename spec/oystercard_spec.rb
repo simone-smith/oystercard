@@ -40,20 +40,20 @@ describe Oystercard do
   context 'when there is not enough money on the card' do
     describe '#touch_in' do
       it 'raises an error if insufficient funds to travel' do
-        expect { subject.touch_in }.to raise_error("Insufficient funds")
+        expect { subject.touch_in(entry_station) }.to raise_error("Insufficient funds")
       end
     end
   end
 
   context 'when there is money on the card' do
-    let(:journeys){ {entry_station: entry_station, exit_station: exit_station} }
+    let(:journey){ {entry_station: entry_station, exit_station: exit_station} }
 
     before { subject.top_up(described_class::BALANCE_LIMIT) }
 
     it 'stores a journey' do
       subject.touch_in(entry_station)
       subject.touch_out(exit_station)
-      expect(subject.journeys).to eq ({entry_station => exit_station})
+      expect(subject.journeys).to include journey
     end
 
     describe '#touch_in' do
@@ -75,12 +75,12 @@ describe Oystercard do
 
     describe '#touch_out' do
       it 'ends a journey' do
-        subject.touch_out
+        subject.touch_out(exit_station)
         expect(subject).not_to be_in_journey
       end
 
       it 'charges card on touchout' do
-        expect { subject.touch_out }.to change { subject.balance }.by -described_class::MINIMUM_CHARGE
+        expect { subject.touch_out(exit_station) }.to change { subject.balance }.by -described_class::MINIMUM_CHARGE
       end
 
       it 'stores exit station' do
