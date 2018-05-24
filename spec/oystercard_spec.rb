@@ -81,6 +81,18 @@ describe Oystercard do
       end
     end
 
+    context 'when not touched in' do
+      it 'does not raise an error on touch out' do
+        oystercard.top_up(10)
+        expect { oystercard.touch_out(exit_station) }.not_to raise_error
+      end
+
+      it 'deducts a penalty fare of 6' do
+        oystercard.top_up(10)
+        expect { oystercard.touch_out(exit_station) }.to change {oystercard.balance}.by -6
+      end
+    end
+
     context 'when there is not enough money on the card' do
       describe '#touch_in' do
         it 'raises an error if insufficient funds to travel' do

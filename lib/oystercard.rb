@@ -30,7 +30,13 @@ class Oystercard
   def touch_out(exit_station)
     deduct(MINIMUM_CHARGE)
     @exit_station = exit_station
-    journeys.last[:exit_station] = exit_station
+    if journeys.empty?
+      journeys << { entry_station: "unknown", exit_station: exit_station }
+    elsif touched_in? #do we need this? Surely if the other two conditions aren't met, then we must have touched in
+      journeys.last[:exit_station] = exit_station
+    elsif !journeys.empty? && journeys.last[:exit_station] != nil
+      journeys << { entry_station: "unknown", exit_station: exit_station }
+    end
     @entry_station = nil
     @exit_station
   end
@@ -39,5 +45,9 @@ class Oystercard
 
   def deduct(amount)
     @balance -= amount
+  end
+
+  def touched_in?
+    journeys.last[:exit_station] == nil
   end
 end
