@@ -6,6 +6,7 @@ class Oystercard
   MAX_BALANCE = 90
   BALANCE_LIMIT = 1
   MINIMUM_CHARGE = 3
+  PENALTY_FARE = 6
 
   def initialize
     @balance = 0
@@ -28,14 +29,13 @@ class Oystercard
   end
 
   def touch_out(exit_station)
-    deduct(MINIMUM_CHARGE)
     @exit_station = exit_station
-    if journeys.empty?
+    if first_journey_not_touched_in(journeys) || not_touched_in_but_not_first_journey(journeys)
       journeys << { entry_station: "unknown", exit_station: exit_station }
-    elsif touched_in? #do we need this? Surely if the other two conditions aren't met, then we must have touched in
+      deduct(PENALTY_FARE)
+    else
       journeys.last[:exit_station] = exit_station
-    elsif !journeys.empty? && journeys.last[:exit_station] != nil
-      journeys << { entry_station: "unknown", exit_station: exit_station }
+      deduct(MINIMUM_CHARGE)
     end
     @entry_station = nil
     @exit_station
@@ -47,7 +47,11 @@ class Oystercard
     @balance -= amount
   end
 
-  def touched_in?
-    journeys.last[:exit_station] == nil
+  def first_journey_not_touched_in(journey)
+    journeys.empty?
+  end
+
+  def not_touched_in_but_not_first_journey(journey)
+    journeys.last[:exit_station] != nil
   end
 end
