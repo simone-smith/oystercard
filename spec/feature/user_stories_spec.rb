@@ -8,7 +8,10 @@ describe 'user stories' do
     expect { card.touch_out("Edgware")}.to change {card.balance}.by -6
   end
 
-  xit 'deducts a charge if I fail to touch out' do
-
+  it 'deducts a charge if I fail to touch out' do
+    card = Oystercard.new
+    card.top_up(10)
+    card.touch_in("Edgware")
+    expect { card.touch_in("Edgware") }.to change {card.balance}.by -6
   end
 end

@@ -25,7 +25,11 @@ class Oystercard
   def touch_in(entry_station)
     fail "Insufficient funds" if @balance < BALANCE_LIMIT
     @entry_station = entry_station
-    journeys << { entry_station: entry_station, exit_station: nil }
+
+    if !journeys.empty? && journeys.last[:exit_station] == nil #refactor - set last journey's exit station as unknown
+      deduct(PENALTY_FARE)
+    end
+      journeys << { entry_station: entry_station, exit_station: nil }
   end
 
   def touch_out(exit_station)
