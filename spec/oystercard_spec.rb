@@ -87,9 +87,9 @@ describe Oystercard do
         expect { oystercard.touch_out(exit_station) }.not_to raise_error
       end
 
-      it 'deducts a penalty fare of 6' do
+      it 'deducts a penalty fare' do
         oystercard.top_up(10)
-        expect { oystercard.touch_out(exit_station) }.to change {oystercard.balance}.by -6
+        expect { oystercard.touch_out(exit_station) }.to change {oystercard.balance}.by -(described_class::PENALTY_FARE)
       end
     end
 
@@ -100,10 +100,10 @@ describe Oystercard do
         expect { oystercard.touch_in(entry_station) }.not_to raise_error
       end
 
-      it 'deducts a penalty fare of 6 when touched in' do
+      it 'deducts a penalty fare when touched in' do
         oystercard.top_up(10)
         oystercard.touch_in(entry_station)
-        expect { oystercard.touch_in(entry_station) }.to change {oystercard.balance}.by -6
+        expect { oystercard.touch_in(entry_station) }.to change {oystercard.balance}.by -(described_class::PENALTY_FARE)
       end
     end
 

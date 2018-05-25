@@ -32,7 +32,7 @@ class Oystercard
   def touch_out(exit_station)
     @exit_station = exit_station
     if not_touched_in(journeys)
-      journeys << { entry_station: "unknown", exit_station: exit_station }
+      journeys << { entry_station: nil, exit_station: exit_station }
       deduct(PENALTY_FARE)
     else
       journeys.last[:exit_station] = exit_station
